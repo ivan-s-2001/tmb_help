@@ -1,34 +1,13 @@
 import { useMemo, useState } from 'react'
-
-const characters = [
-  {
-    id: 'patches',
-    name: 'Patches',
-    role: 'гибкий поддерживающий герой',
-  },
-  {
-    id: 'picket',
-    name: 'Picket',
-    role: 'танк и контроль входящего урона',
-  },
-  {
-    id: 'tantrum',
-    name: 'Tantrum',
-    role: 'агрессия, ярость и добивание',
-  },
-  {
-    id: 'boomer',
-    name: 'Boomer',
-    role: 'бомбы, подготовка и точечный урон',
-  },
-]
+import { gameAssets } from './gameAssets'
 
 export default function App() {
+  const { characters, materials } = gameAssets
   const [activeCharacterId, setActiveCharacterId] = useState(characters[0].id)
 
   const activeCharacter = useMemo(
     () => characters.find((character) => character.id === activeCharacterId),
-    [activeCharacterId],
+    [activeCharacterId, characters],
   )
 
   return (
@@ -40,8 +19,8 @@ export default function App() {
         <span className="eyebrow">Too Many Bones Helper</span>
         <h1>Выбери героя</h1>
         <p className="lead">
-          Первый рабочий этап: только стартовый экран. Чистый новый каркас,
-          мобильный интерфейс и крупные кнопки персонажей без лишней логики.
+          Стартовый экран теперь опирается на твои реальные игровые ресурсы. Никаких случайных внешних
+          картинок — только твоя визуальная база и чистый каркас для следующего этапа.
         </p>
 
         <section className="character-list" aria-label="Список персонажей">
@@ -52,23 +31,50 @@ export default function App() {
               <button
                 key={character.id}
                 type="button"
-                className={`character-button ${isActive ? 'is-active' : ''}`}
+                className={`character-card ${isActive ? 'is-active' : ''}`}
+                style={{ '--accent': character.accent }}
                 onClick={() => setActiveCharacterId(character.id)}
               >
-                <span className="character-name">{character.name}</span>
-                <span className="character-role">{character.role}</span>
+                <div className="character-visual">
+                  <div className="character-visual-glow" aria-hidden="true" />
+                  <img
+                    src={character.image}
+                    alt={character.name}
+                    className="character-image"
+                    loading="eager"
+                    decoding="async"
+                  />
+                </div>
+
+                <div className="character-content">
+                  <div className="character-topline">
+                    <span className="character-name">{character.name}</span>
+                    {isActive ? <span className="character-state">выбран</span> : null}
+                  </div>
+
+                  <span className="character-tagline">{character.tagline}</span>
+                  <p className="character-description">{character.description}</p>
+                </div>
               </button>
             )
           })}
         </section>
 
-        <section className="status-card" aria-live="polite">
+        <section className="status-card" aria-live="polite" style={{ '--accent': activeCharacter.accent }}>
           <span className="status-label">Сейчас выбран</span>
-          <strong>{activeCharacter?.name}</strong>
+          <strong>{activeCharacter.name}</strong>
           <p>
-            Следующим безопасным шагом можно будет добавить отдельную страницу
-            героя, не ломая стартовый экран.
+            Визуальный слой уже подключён на твоих ресурсах. Кубики пока не встраиваются, но место под
+            игровые материалы в структуре проекта уже предусмотрено: <code>characters</code> активны, а
+            <code>dice</code>, <code>tokens</code> и <code>references</code> оставлены как следующий шаг.
           </p>
+          <div className="status-tags" aria-hidden="true">
+            {Object.entries(materials).map(([key, value]) => (
+              <span key={key} className={`status-tag status-tag-${value}`}>
+                {key}
+              </span>
+            ))}
+          </div>
         </section>
       </main>
     </div>

@@ -116,7 +116,8 @@ h1 {
 .lead,
 .page-lead,
 .page-card-text,
-.hero-identity-role {
+.hero-identity-role,
+.page-fact-note {
   color: #b4bbd2;
   font-size: 0.95rem;
 }
@@ -152,16 +153,39 @@ h1 {
 }
 
 .character-card,
-.page-card {
+.page-card,
+.page-accent-block,
+.page-fact-block {
   position: relative;
   overflow: hidden;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1.3rem;
-  background: linear-gradient(180deg, rgba(22, 26, 37, 0.98), rgba(13, 16, 25, 0.98));
   color: #f6f7fb;
   text-align: left;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.character-card,
+.page-card {
+  border-radius: 1.3rem;
+  background: linear-gradient(180deg, rgba(22, 26, 37, 0.98), rgba(13, 16, 25, 0.98));
+}
+
+.page-accent-block {
+  border-radius: 1.3rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 12%, rgba(24, 28, 40, 0.98)), rgba(13, 16, 25, 0.98));
+  padding: 1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.page-fact-block {
+  border-radius: 1.05rem;
+  background: linear-gradient(180deg, rgba(17, 21, 31, 0.96), rgba(11, 14, 22, 0.98));
+  padding: 0.85rem 0.95rem;
+  display: grid;
+  gap: 0.12rem;
 }
 
 .character-card {
@@ -201,7 +225,9 @@ h1 {
 
 .character-card::after,
 .page-card::after,
-.hero-identity-card::after {
+.hero-identity-card::after,
+.page-accent-block::after,
+.page-fact-block::after {
   content: '';
   position: absolute;
   inset: auto auto -4rem -2.5rem;
@@ -255,7 +281,8 @@ h1 {
 
 .character-name,
 .hero-identity-name,
-.page-card-title {
+.page-card-title,
+.page-fact-value {
   font-size: 1.4rem;
   font-weight: 700;
   line-height: 0.98;
@@ -607,6 +634,46 @@ h1 {
   letter-spacing: 0.01em;
 }
 
+.page-section {
+  display: grid;
+  gap: 0.8rem;
+  scroll-margin-top: 5.5rem;
+}
+
+.page-block-stack,
+.page-rich-text {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.page-block-slot {
+  display: block;
+}
+
+.page-accent-eyebrow,
+.page-fact-label {
+  position: relative;
+  z-index: 1;
+  color: color-mix(in srgb, var(--accent) 72%, white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-fact-value {
+  position: relative;
+  z-index: 1;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.page-fact-note,
+.page-card-text {
+  position: relative;
+  z-index: 1;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -631,12 +698,6 @@ h1 {
 .page-card-grid,
 .page-stack {
   gap: 0.8rem;
-}
-
-.page-section {
-  display: grid;
-  gap: 0.8rem;
-  scroll-margin-top: 5.5rem;
 }
 
 .page-card-title {

@@ -40,13 +40,15 @@ export default function HeroSpaceLayout({
 
           <div className="hero-identity-visual" aria-hidden="true">
             <div className="hero-identity-halo" />
-            <img
-              src={character.image}
-              alt=""
-              className="hero-identity-image"
-              loading="eager"
-              decoding="async"
-            />
+            {character.visualAsset?.src ? (
+              <img
+                src={character.visualAsset.src}
+                alt=""
+                className="hero-identity-image"
+                loading="eager"
+                decoding="async"
+              />
+            ) : null}
           </div>
         </section>
       </header>

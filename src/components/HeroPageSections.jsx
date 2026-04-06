@@ -65,16 +65,35 @@ function getSectionBlocks(section) {
   return buildLegacyBlocks(section)
 }
 
+function AssetFigure({ asset, className, alt = '' }) {
+  if (!asset?.src) {
+    return null
+  }
+
+  return (
+    <div className={className}>
+      <img
+        src={asset.src}
+        alt={alt || asset.alt || ''}
+        className={`${className}-image`}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  )
+}
+
 function TextBlock({ block }) {
   const paragraphs = getBlockParagraphs(block)
 
-  if (!paragraphs.length && !block.title) {
+  if (!paragraphs.length && !block.title && !block.mediaAsset) {
     return null
   }
 
   return (
     <article className="page-text-block">
       {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+      <AssetFigure asset={block.mediaAsset} className="page-block-media" alt={block.title ?? ''} />
 
       {paragraphs.length ? (
         <div className="page-rich-text">
@@ -90,13 +109,14 @@ function TextBlock({ block }) {
 }
 
 function ListBlock({ block }) {
-  if (!block.items?.length && !block.title) {
+  if (!block.items?.length && !block.title && !block.mediaAsset) {
     return null
   }
 
   return (
     <article className="page-list-block">
       {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+      <AssetFigure asset={block.mediaAsset} className="page-block-media" alt={block.title ?? ''} />
 
       {block.items?.length ? (
         <ul className="page-checklist">
@@ -112,7 +132,7 @@ function ListBlock({ block }) {
 function AccentBlock({ block }) {
   const paragraphs = getBlockParagraphs(block)
 
-  if (!paragraphs.length && !block.title && !block.eyebrow) {
+  if (!paragraphs.length && !block.title && !block.eyebrow && !block.mediaAsset) {
     return null
   }
 
@@ -120,6 +140,7 @@ function AccentBlock({ block }) {
     <article className={`page-accent-block ${block.tone ? `page-accent-block--${block.tone}` : ''}`}>
       {block.eyebrow ? <span className="page-accent-eyebrow">{block.eyebrow}</span> : null}
       {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+      <AssetFigure asset={block.mediaAsset} className="page-block-media" alt={block.title ?? ''} />
 
       {paragraphs.length ? (
         <div className="page-rich-text">
@@ -182,6 +203,7 @@ function CardsBlock({ block, page, pages, onOpenPage }) {
       <div className={`page-card-grid ${isRouteCards ? 'page-card-grid--routes' : 'page-card-grid--content'}`}>
         {items.map((item, index) => {
           const actionPageId = item.actionPageId ?? item.action?.pageId
+          const cardMedia = item.imageAsset
 
           if (actionPageId) {
             return (
@@ -191,6 +213,7 @@ function CardsBlock({ block, page, pages, onOpenPage }) {
                 className="page-card page-card-action page-card--route"
                 onClick={() => onOpenPage(actionPageId)}
               >
+                <AssetFigure asset={cardMedia} className="page-card-media" alt={item.title ?? ''} />
                 {item.title ? <strong className="page-card-title">{item.title}</strong> : null}
                 {item.text ? <p className="page-card-text">{item.text}</p> : null}
                 <span className="page-card-link">{item.actionLabel ?? 'Открыть →'}</span>
@@ -200,6 +223,7 @@ function CardsBlock({ block, page, pages, onOpenPage }) {
 
           return (
             <article key={item.title ?? index} className="page-card page-card--content">
+              <AssetFigure asset={cardMedia} className="page-card-media" alt={item.title ?? ''} />
               {item.title ? <strong className="page-card-title">{item.title}</strong> : null}
               {item.text ? <p className="page-card-text">{item.text}</p> : null}
             </article>
@@ -248,6 +272,9 @@ function RouteBlock({ block }) {
                   </span>
 
                   <span className="page-route-copy">
+                    {step.imageAsset ? (
+                      <AssetFigure asset={step.imageAsset} className="page-inline-asset" alt={step.label ?? ''} />
+                    ) : null}
                     <strong className="page-route-label">{step.label}</strong>
                     {step.note ? <span className="page-card-text">{step.note}</span> : null}
                   </span>
@@ -299,6 +326,9 @@ function ChecklistBlock({ block }) {
                 </span>
 
                 <span className="page-checklist-copy">
+                  {item.imageAsset ? (
+                    <AssetFigure asset={item.imageAsset} className="page-inline-asset" alt={item.label ?? ''} />
+                  ) : null}
                   <strong className="page-checklist-label">{item.label}</strong>
                   {item.note ? <span className="page-card-text">{item.note}</span> : null}
                 </span>

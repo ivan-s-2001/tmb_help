@@ -24,13 +24,15 @@ export default function HomePage({ characters, onOpenCharacter }) {
 
               <div className="character-card-visual" aria-hidden="true">
                 <div className="character-card-halo" />
-                <img
-                  src={character.image}
-                  alt=""
-                  className="character-card-image"
-                  loading="eager"
-                  decoding="async"
-                />
+                {character.visualAsset?.src ? (
+                  <img
+                    src={character.visualAsset.src}
+                    alt=""
+                    className="character-card-image"
+                    loading="eager"
+                    decoding="async"
+                  />
+                ) : null}
               </div>
 
               <span className="character-card-action" aria-hidden="true">

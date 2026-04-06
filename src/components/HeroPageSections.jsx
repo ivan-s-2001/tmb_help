@@ -1,3 +1,23 @@
+import { Fragment, useState } from 'react'
+
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
+
+function buildTrackPoints(min, max, step) {
+  const points = []
+
+  for (let value = min; value <= max; value += step) {
+    points.push(value)
+  }
+
+  if (!points.length || points[points.length - 1] !== max) {
+    points.push(max)
+  }
+
+  return points
+}
+
 function getBlockParagraphs(block) {
   if (Array.isArray(block.paragraphs) && block.paragraphs.length) {
     return block.paragraphs
@@ -45,7 +65,7 @@ function getSectionBlocks(section) {
   return buildLegacyBlocks(section)
 }
 
-function renderTextBlock(block) {
+function TextBlock({ block }) {
   const paragraphs = getBlockParagraphs(block)
 
   if (!paragraphs.length && !block.title) {
@@ -69,7 +89,7 @@ function renderTextBlock(block) {
   )
 }
 
-function renderListBlock(block) {
+function ListBlock({ block }) {
   if (!block.items?.length && !block.title) {
     return null
   }
@@ -89,7 +109,7 @@ function renderListBlock(block) {
   )
 }
 
-function renderAccentBlock(block) {
+function AccentBlock({ block }) {
   const paragraphs = getBlockParagraphs(block)
 
   if (!paragraphs.length && !block.title && !block.eyebrow) {
@@ -114,7 +134,7 @@ function renderAccentBlock(block) {
   )
 }
 
-function renderFactBlock(block) {
+function FactBlock({ block }) {
   if (!block.label || !block.value) {
     return null
   }
@@ -128,94 +148,7 @@ function renderFactBlock(block) {
   )
 }
 
-function renderRouteBlock(block) {
-  if (!block.steps?.length && !block.title) {
-    return null
-  }
-
-  return (
-    <article className="page-route-block">
-      {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
-
-      {block.steps?.length ? (
-        <ol className="page-route-list">
-          {block.steps.map((step, index) => (
-            <li key={`${step.label}-${index}`} className="page-route-step">
-              <span className="page-route-index">{index + 1}</span>
-              <div className="page-route-copy">
-                <strong className="page-route-label">{step.label}</strong>
-                {step.note ? <p className="page-card-text">{step.note}</p> : null}
-              </div>
-            </li>
-          ))}
-        </ol>
-      ) : null}
-    </article>
-  )
-}
-
-function renderChecklistBlock(block) {
-  if (!block.items?.length && !block.title) {
-    return null
-  }
-
-  return (
-    <article className="page-checklist-block">
-      {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
-
-      {block.items?.length ? (
-        <div className="page-checklist-rows">
-          {block.items.map((item, index) => (
-            <article key={`${item.label}-${index}`} className="page-checklist-row">
-              <span className="page-checklist-mark" aria-hidden="true">
-                ✓
-              </span>
-
-              <div className="page-checklist-copy">
-                <strong className="page-checklist-label">{item.label}</strong>
-                {item.note ? <p className="page-card-text">{item.note}</p> : null}
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : null}
-    </article>
-  )
-}
-
-function renderTrackerBlock(block) {
-  const min = Number.isFinite(block.min) ? block.min : 0
-  const max = Number.isFinite(block.max) ? block.max : 0
-  const initialValue = Number.isFinite(block.initialValue) ? block.initialValue : min
-  const points = max > min ? Array.from({ length: max - min + 1 }, (_, index) => min + index) : []
-
-  if (!points.length && !block.title) {
-    return null
-  }
-
-  return (
-    <article className="page-tracker-block">
-      {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
-      {block.note ? <p className="page-card-text">{block.note}</p> : null}
-
-      {points.length ? (
-        <div className="page-tracker-scale" aria-label={`Шкала от ${min} до ${max}`}>
-          {points.map((point) => (
-            <div
-              key={point}
-              className={`page-tracker-step ${point <= initialValue ? 'is-filled' : ''} ${point === initialValue ? 'is-current' : ''}`}
-            >
-              <span className="page-tracker-dot" aria-hidden="true" />
-              <span className="page-tracker-value">{point}</span>
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </article>
-  )
-}
-
-function renderCardsBlock(block, page, pages, onOpenPage) {
+function CardsBlock({ block, page, pages, onOpenPage }) {
   const items =
     block.source === 'otherPages'
       ? pages
@@ -228,14 +161,14 @@ function renderCardsBlock(block, page, pages, onOpenPage) {
           }))
       : block.items ?? []
 
-  const isRouteBlock =
+  const isRouteCards =
     block.source === 'otherPages'
     || items.some((item) => item.actionPageId || item.action?.pageId)
 
   if (!items.length) {
     return (
-      <div className={`page-cards-block ${isRouteBlock ? 'page-cards-block--routes' : 'page-cards-block--content'}`}>
-        <div className={`page-card-grid ${isRouteBlock ? 'page-card-grid--routes' : 'page-card-grid--content'}`}>
+      <div className={`page-cards-block ${isRouteCards ? 'page-cards-block--routes' : 'page-cards-block--content'}`}>
+        <div className={`page-card-grid ${isRouteCards ? 'page-card-grid--routes' : 'page-card-grid--content'}`}>
           <article className="page-card">
             <p className="page-card-text">Здесь пока нет дополнительных блоков этого типа.</p>
           </article>
@@ -245,8 +178,8 @@ function renderCardsBlock(block, page, pages, onOpenPage) {
   }
 
   return (
-    <div className={`page-cards-block ${isRouteBlock ? 'page-cards-block--routes' : 'page-cards-block--content'}`}>
-      <div className={`page-card-grid ${isRouteBlock ? 'page-card-grid--routes' : 'page-card-grid--content'}`}>
+    <div className={`page-cards-block ${isRouteCards ? 'page-cards-block--routes' : 'page-cards-block--content'}`}>
+      <div className={`page-card-grid ${isRouteCards ? 'page-card-grid--routes' : 'page-card-grid--content'}`}>
         {items.map((item, index) => {
           const actionPageId = item.actionPageId ?? item.action?.pageId
 
@@ -277,24 +210,199 @@ function renderCardsBlock(block, page, pages, onOpenPage) {
   )
 }
 
+function RouteBlock({ block }) {
+  const steps = block.steps ?? []
+  const [doneSteps, setDoneSteps] = useState(() => steps.map((step) => Boolean(step.done)))
+  const doneCount = doneSteps.filter(Boolean).length
+
+  if (!steps.length && !block.title) {
+    return null
+  }
+
+  const toggleStep = (index) => {
+    setDoneSteps((previous) => previous.map((value, stepIndex) => (stepIndex === index ? !value : value)))
+  }
+
+  return (
+    <article className="page-route-block">
+      <div className="page-block-head">
+        {block.title ? <strong className="page-card-title">{block.title}</strong> : <span />}
+        {steps.length ? <span className="page-block-meta">{doneCount}/{steps.length}</span> : null}
+      </div>
+
+      {steps.length ? (
+        <ol className="page-route-list">
+          {steps.map((step, index) => {
+            const isDone = doneSteps[index]
+
+            return (
+              <li key={`${step.label}-${index}`} className="page-route-list-item">
+                <button
+                  type="button"
+                  className={`page-route-step ${isDone ? 'is-done' : ''}`}
+                  onClick={() => toggleStep(index)}
+                  aria-pressed={isDone}
+                >
+                  <span className="page-route-index" aria-hidden="true">
+                    {isDone ? '✓' : index + 1}
+                  </span>
+
+                  <span className="page-route-copy">
+                    <strong className="page-route-label">{step.label}</strong>
+                    {step.note ? <span className="page-card-text">{step.note}</span> : null}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ol>
+      ) : null}
+    </article>
+  )
+}
+
+function ChecklistBlock({ block }) {
+  const items = block.items ?? []
+  const [checkedItems, setCheckedItems] = useState(() => items.map((item) => Boolean(item.checked)))
+  const doneCount = checkedItems.filter(Boolean).length
+
+  if (!items.length && !block.title) {
+    return null
+  }
+
+  const toggleItem = (index) => {
+    setCheckedItems((previous) => previous.map((value, itemIndex) => (itemIndex === index ? !value : value)))
+  }
+
+  return (
+    <article className="page-checklist-block">
+      <div className="page-block-head">
+        {block.title ? <strong className="page-card-title">{block.title}</strong> : <span />}
+        {items.length ? <span className="page-block-meta">{doneCount}/{items.length}</span> : null}
+      </div>
+
+      {items.length ? (
+        <div className="page-checklist-rows">
+          {items.map((item, index) => {
+            const isChecked = checkedItems[index]
+
+            return (
+              <button
+                key={`${item.label}-${index}`}
+                type="button"
+                className={`page-checklist-row ${isChecked ? 'is-done' : ''}`}
+                onClick={() => toggleItem(index)}
+                aria-pressed={isChecked}
+              >
+                <span className="page-checklist-mark" aria-hidden="true">
+                  {isChecked ? '✓' : ''}
+                </span>
+
+                <span className="page-checklist-copy">
+                  <strong className="page-checklist-label">{item.label}</strong>
+                  {item.note ? <span className="page-card-text">{item.note}</span> : null}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      ) : null}
+    </article>
+  )
+}
+
+function TrackerBlock({ block }) {
+  const min = Number.isFinite(block.min) ? block.min : 0
+  const max = Number.isFinite(block.max) ? block.max : min
+  const step = Number.isFinite(block.step) && block.step > 0 ? block.step : 1
+  const initialValue = clampNumber(
+    Number.isFinite(block.initialValue) ? block.initialValue : min,
+    min,
+    max,
+  )
+
+  const [value, setValue] = useState(initialValue)
+  const points = buildTrackPoints(min, max, step)
+
+  const updateValue = (nextValue) => {
+    setValue(clampNumber(nextValue, min, max))
+  }
+
+  if (!points.length && !block.title) {
+    return null
+  }
+
+  return (
+    <article className="page-tracker-block">
+      <div className="page-block-head">
+        {block.title ? <strong className="page-card-title">{block.title}</strong> : <span />}
+        <span className="page-block-meta page-block-meta--value">{value}</span>
+      </div>
+
+      {block.note ? <p className="page-card-text">{block.note}</p> : null}
+
+      <div className="page-tracker-controls">
+        <button
+          type="button"
+          className="page-tracker-button"
+          onClick={() => updateValue(value - step)}
+          aria-label="Уменьшить счётчик"
+        >
+          −
+        </button>
+
+        <div className="page-tracker-scale" aria-label={`Шкала от ${min} до ${max}`}>
+          {points.map((point) => {
+            const isFilled = point <= value
+            const isCurrent = point === value
+
+            return (
+              <button
+                key={point}
+                type="button"
+                className={`page-tracker-step ${isFilled ? 'is-filled' : ''} ${isCurrent ? 'is-current' : ''}`}
+                onClick={() => updateValue(point)}
+                aria-pressed={isCurrent}
+                aria-label={`Установить значение ${point}`}
+              >
+                <span className="page-tracker-dot" aria-hidden="true" />
+                <span className="page-tracker-value">{point}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <button
+          type="button"
+          className="page-tracker-button"
+          onClick={() => updateValue(value + step)}
+          aria-label="Увеличить счётчик"
+        >
+          +
+        </button>
+      </div>
+    </article>
+  )
+}
+
 function renderBlock(block, page, pages, onOpenPage) {
   switch (block.type) {
     case 'text':
-      return renderTextBlock(block)
+      return <TextBlock block={block} />
     case 'list':
-      return renderListBlock(block)
+      return <ListBlock block={block} />
     case 'accent':
-      return renderAccentBlock(block)
+      return <AccentBlock block={block} />
     case 'fact':
-      return renderFactBlock(block)
+      return <FactBlock block={block} />
     case 'route':
-      return renderRouteBlock(block)
+      return <RouteBlock block={block} />
     case 'checklist':
-      return renderChecklistBlock(block)
+      return <ChecklistBlock block={block} />
     case 'tracker':
-      return renderTrackerBlock(block)
+      return <TrackerBlock block={block} />
     case 'cards':
-      return renderCardsBlock(block, page, pages, onOpenPage)
+      return <CardsBlock block={block} page={page} pages={pages} onOpenPage={onOpenPage} />
     default:
       return null
   }
@@ -319,12 +427,13 @@ export default function HeroPageSections({ page, pages, onOpenPage }) {
 
             <div className="page-block-stack">
               {blocks.map((block, index) => (
-                <div
-                  key={block.id ?? `${section.id}-${block.type}-${index}`}
-                  className={`page-block-slot page-block-slot--${block.type}`}
-                >
-                  {renderBlock(block, page, pages, onOpenPage)}
-                </div>
+                <Fragment key={block.id ?? `${section.id}-${block.type}-${index}`}>
+                  {index > 0 ? <div className="page-block-divider" aria-hidden="true" /> : null}
+
+                  <div className={`page-block-slot page-block-slot--${block.type}`}>
+                    {renderBlock(block, page, pages, onOpenPage)}
+                  </div>
+                </Fragment>
               ))}
             </div>
           </section>

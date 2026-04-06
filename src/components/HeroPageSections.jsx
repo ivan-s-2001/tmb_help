@@ -97,7 +97,7 @@ function renderAccentBlock(block) {
   }
 
   return (
-    <article className="page-accent-block">
+    <article className={`page-accent-block ${block.tone ? `page-accent-block--${block.tone}` : ''}`}>
       {block.eyebrow ? <span className="page-accent-eyebrow">{block.eyebrow}</span> : null}
       {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
 
@@ -124,6 +124,93 @@ function renderFactBlock(block) {
       <span className="page-fact-label">{block.label}</span>
       <strong className="page-fact-value">{block.value}</strong>
       {block.note ? <span className="page-fact-note">{block.note}</span> : null}
+    </article>
+  )
+}
+
+function renderRouteBlock(block) {
+  if (!block.steps?.length && !block.title) {
+    return null
+  }
+
+  return (
+    <article className="page-route-block">
+      {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+
+      {block.steps?.length ? (
+        <ol className="page-route-list">
+          {block.steps.map((step, index) => (
+            <li key={`${step.label}-${index}`} className="page-route-step">
+              <span className="page-route-index">{index + 1}</span>
+              <div className="page-route-copy">
+                <strong className="page-route-label">{step.label}</strong>
+                {step.note ? <p className="page-card-text">{step.note}</p> : null}
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+    </article>
+  )
+}
+
+function renderChecklistBlock(block) {
+  if (!block.items?.length && !block.title) {
+    return null
+  }
+
+  return (
+    <article className="page-checklist-block">
+      {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+
+      {block.items?.length ? (
+        <div className="page-checklist-rows">
+          {block.items.map((item, index) => (
+            <article key={`${item.label}-${index}`} className="page-checklist-row">
+              <span className="page-checklist-mark" aria-hidden="true">
+                ✓
+              </span>
+
+              <div className="page-checklist-copy">
+                <strong className="page-checklist-label">{item.label}</strong>
+                {item.note ? <p className="page-card-text">{item.note}</p> : null}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </article>
+  )
+}
+
+function renderTrackerBlock(block) {
+  const min = Number.isFinite(block.min) ? block.min : 0
+  const max = Number.isFinite(block.max) ? block.max : 0
+  const initialValue = Number.isFinite(block.initialValue) ? block.initialValue : min
+  const points = max > min ? Array.from({ length: max - min + 1 }, (_, index) => min + index) : []
+
+  if (!points.length && !block.title) {
+    return null
+  }
+
+  return (
+    <article className="page-tracker-block">
+      {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+      {block.note ? <p className="page-card-text">{block.note}</p> : null}
+
+      {points.length ? (
+        <div className="page-tracker-scale" aria-label={`Шкала от ${min} до ${max}`}>
+          {points.map((point) => (
+            <div
+              key={point}
+              className={`page-tracker-step ${point <= initialValue ? 'is-filled' : ''} ${point === initialValue ? 'is-current' : ''}`}
+            >
+              <span className="page-tracker-dot" aria-hidden="true" />
+              <span className="page-tracker-value">{point}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </article>
   )
 }
@@ -200,6 +287,12 @@ function renderBlock(block, page, pages, onOpenPage) {
       return renderAccentBlock(block)
     case 'fact':
       return renderFactBlock(block)
+    case 'route':
+      return renderRouteBlock(block)
+    case 'checklist':
+      return renderChecklistBlock(block)
+    case 'tracker':
+      return renderTrackerBlock(block)
     case 'cards':
       return renderCardsBlock(block, page, pages, onOpenPage)
     default:

@@ -31,6 +31,16 @@ function PrepIcon() {
   )
 }
 
+function BlocksIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4.5" y="5.5" width="15" height="3.5" rx="1.2" />
+      <rect x="4.5" y="10.25" width="15" height="3.5" rx="1.2" />
+      <rect x="4.5" y="15" width="15" height="3.5" rx="1.2" />
+    </svg>
+  )
+}
+
 function DefaultIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -47,6 +57,8 @@ function getPageIcon(pageId) {
       return <OverviewIcon />
     case 'prep':
       return <PrepIcon />
+    case 'blocks':
+      return <BlocksIcon />
     default:
       return <DefaultIcon />
   }

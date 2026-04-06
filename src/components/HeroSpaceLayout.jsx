@@ -1,3 +1,4 @@
+import HeroBottomNav from './HeroBottomNav'
 import HeroSectionMenu from './HeroSectionMenu'
 
 export default function HeroSpaceLayout({
@@ -13,7 +14,7 @@ export default function HeroSpaceLayout({
   return (
     <main className="hero-space-screen" style={{ '--accent': character.accent }}>
       {currentPage ? (
-        <div className="hero-floating-layer" aria-hidden="false">
+        <div className="hero-top-layer" aria-hidden="false">
           <HeroSectionMenu key={currentPage.id} page={currentPage} />
         </div>
       ) : null}
@@ -48,23 +49,17 @@ export default function HeroSpaceLayout({
             />
           </div>
         </section>
-
-        <nav className="hero-page-nav" aria-label="Страницы героя">
-          {pages.map((page) => (
-            <button
-              key={page.id}
-              type="button"
-              className={`hero-page-link ${currentPageId === page.id ? 'is-current' : ''}`}
-              onClick={() => onOpenPage(page.id)}
-              aria-current={currentPageId === page.id ? 'page' : undefined}
-            >
-              {page.label}
-            </button>
-          ))}
-        </nav>
       </header>
 
       <section className="hero-page-body">{children}</section>
+
+      <div className="hero-bottom-layer" aria-hidden="false">
+        <HeroBottomNav
+          pages={pages}
+          currentPageId={currentPageId}
+          onOpenPage={onOpenPage}
+        />
+      </div>
     </main>
   )
 }

@@ -1,4 +1,3 @@
-
 import { assetLayer, resolveDieAssets, resolveDieFaceAssets, resolveHeroAssets } from './assetLayer'
 import { heroContent } from './gameContent'
 import { diceContent, dieFaceContent } from './gameDice'

@@ -119,7 +119,8 @@ h1 {
 .page-lead,
 .page-card-text,
 .hero-identity-role,
-.page-fact-note {
+.page-fact-note,
+.page-die-face-meaning {
   color: #b4bbd2;
   font-size: 0.95rem;
 }
@@ -162,7 +163,8 @@ h1 {
 .page-fact-block,
 .page-route-block,
 .page-checklist-block,
-.page-tracker-block {
+.page-tracker-block,
+.page-die-block {
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -288,6 +290,14 @@ h1 {
   padding: 0.95rem;
   display: grid;
   gap: 0.75rem;
+}
+
+.page-die-block {
+  border-radius: 1.28rem;
+  background: linear-gradient(180deg, rgba(16, 20, 31, 0.98), rgba(10, 13, 20, 0.99));
+  padding: 0.95rem;
+  display: grid;
+  gap: 0.9rem;
 }
 
 .character-card {
@@ -821,6 +831,10 @@ h1 {
   max-width: 24rem;
 }
 
+.page-block-slot--die {
+  max-width: 48rem;
+}
+
 .page-rich-text {
   display: grid;
   gap: 0.72rem;
@@ -853,6 +867,34 @@ h1 {
 .page-card--route .page-card-link {
   margin-top: auto;
   background: color-mix(in srgb, var(--accent) 12%, rgba(255, 255, 255, 0.05));
+}
+
+.page-block-media,
+.page-card-media,
+.page-inline-asset,
+.page-die-asset,
+.page-die-face-asset {
+  display: block;
+}
+
+.page-block-media-image,
+.page-card-media-image,
+.page-inline-asset-image,
+.page-die-asset-image,
+.page-die-face-asset-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.page-inline-asset {
+  width: 2rem;
+}
+
+.page-inline-asset-image {
+  border-radius: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .page-list-block .page-checklist {
@@ -893,6 +935,80 @@ h1 {
 
 .page-block-meta--value {
   min-width: 3rem;
+}
+
+.page-die-head {
+  display: grid;
+  gap: 0.34rem;
+  min-width: 0;
+}
+
+.page-die-main {
+  display: grid;
+  grid-template-columns: 5.4rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.page-die-asset {
+  width: 5.4rem;
+}
+
+.page-die-asset-image {
+  border-radius: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.page-die-summary {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.page-die-faces-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.page-die-face {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.72rem 0.78rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.page-die-face-asset {
+  width: 3rem;
+}
+
+.page-die-face-asset-image {
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.page-die-face-copy {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.page-die-face-name,
+.page-route-label,
+.page-checklist-label {
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.24;
+}
+
+.page-die-face-meaning {
+  font-size: 0.83rem;
+  line-height: 1.22;
 }
 
 .page-route-list {
@@ -953,13 +1069,6 @@ h1 {
   gap: 0.24rem;
   min-width: 0;
   text-align: left;
-}
-
-.page-route-label,
-.page-checklist-label {
-  font-size: 0.96rem;
-  font-weight: 700;
-  line-height: 1.24;
 }
 
 .page-checklist-rows {
@@ -1222,6 +1331,18 @@ h1 {
     font-size: 0.6rem;
   }
 
+  .page-die-main {
+    grid-template-columns: 1fr;
+  }
+
+  .page-die-asset {
+    width: 4.8rem;
+  }
+
+  .page-die-faces-grid {
+    grid-template-columns: 1fr;
+  }
+
   .page-tracker-controls {
     grid-template-columns: 1fr 1fr;
   }
@@ -1271,5 +1392,9 @@ h1 {
 
   .page-card-grid--routes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-die-faces-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

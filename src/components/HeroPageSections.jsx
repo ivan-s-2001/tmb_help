@@ -169,6 +169,54 @@ function FactBlock({ block }) {
   )
 }
 
+function DieBlock({ block }) {
+  const die = block.die
+  const faces = die?.faces ?? []
+
+  if (!die) {
+    return null
+  }
+
+  return (
+    <article className="page-die-block">
+      <div className="page-block-head">
+        <div className="page-die-head">
+          {block.eyebrow ? <span className="page-accent-eyebrow">{block.eyebrow}</span> : null}
+          {block.title ? <strong className="page-card-title">{block.title}</strong> : null}
+          {block.text ? <p className="page-card-text">{block.text}</p> : null}
+        </div>
+
+        <span className="page-block-meta page-block-meta--value">{die.code}</span>
+      </div>
+
+      <div className="page-die-main">
+        <AssetFigure asset={die.visualAsset} className="page-die-asset" alt={die.name} />
+
+        <div className="page-die-summary">
+          <strong className="page-route-label">{die.name}</strong>
+          <p className="page-card-text">
+            {block.caption ?? 'Дайс и его грани приходят из сущностей системы и используют asset-layer.'}
+          </p>
+        </div>
+      </div>
+
+      {faces.length ? (
+        <div className="page-die-faces-grid">
+          {faces.map((face) => (
+            <article key={face.id} className="page-die-face">
+              <AssetFigure asset={face.visualAsset} className="page-die-face-asset" alt={face.name} />
+              <div className="page-die-face-copy">
+                <strong className="page-die-face-name">{face.name}</strong>
+                <span className="page-die-face-meaning">{face.meaning}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </article>
+  )
+}
+
 function CardsBlock({ block, page, pages, onOpenPage }) {
   const items =
     block.source === 'otherPages'
@@ -425,6 +473,8 @@ function renderBlock(block, page, pages, onOpenPage) {
       return <AccentBlock block={block} />
     case 'fact':
       return <FactBlock block={block} />
+    case 'die':
+      return <DieBlock block={block} />
     case 'route':
       return <RouteBlock block={block} />
     case 'checklist':

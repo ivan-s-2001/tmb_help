@@ -1,5 +1,5 @@
 function createHeroPages(hero) {
-  const { name, tagline, description } = hero
+  const { name, tagline, description, coreDieId } = hero
 
   return [
     {
@@ -99,6 +99,15 @@ function createHeroPages(hero) {
               label: 'Фокус',
               value: tagline,
               note: `${name} должен усиливать партию через свою основную функцию.`,
+            },
+            {
+              id: 'hero-role-die',
+              type: 'die',
+              dieId: coreDieId,
+              eyebrow: 'Игровая сущность',
+              title: 'Ключевой дайс героя',
+              text: 'Этот блок уже использует сущность дайса и его граней внутри живой страницы героя.',
+              caption: 'Кубик и все грани приходят из dice/faces и используют asset-layer.',
             },
             {
               id: 'hero-role-warning',
@@ -418,6 +427,7 @@ export const heroContent = [
     description: 'Гибкий герой поддержки с точечным лечением, утилити-эффектами и аккуратным темпом игры.',
     accent: '#7ed3ff',
     visualAssetId: 'character.patches.portrait',
+    coreDieId: 'die.patches.utility',
   },
   {
     id: 'picket',
@@ -426,6 +436,7 @@ export const heroContent = [
     description: 'Плотный защитник с щитом, провокацией, крепкой обороной и понятной передней линией.',
     accent: '#ffb067',
     visualAssetId: 'character.picket.portrait',
+    coreDieId: 'die.picket.guard',
   },
   {
     id: 'tantrum',
@@ -434,6 +445,7 @@ export const heroContent = [
     description: 'Агрессивный ближний бой с быстрым нарастанием угрозы и мощным давлением на врага.',
     accent: '#ffd166',
     visualAssetId: 'character.tantrum.portrait',
+    coreDieId: 'die.tantrum.fury',
   },
   {
     id: 'boomer',
@@ -442,6 +454,7 @@ export const heroContent = [
     description: 'Взрывной персонаж с высокой угрозой, сильным burst-уроном и яркой атакующей подачей.',
     accent: '#ff8a80',
     visualAssetId: 'character.boomer.portrait',
+    coreDieId: 'die.boomer.bomb',
   },
 ].map((hero) => ({
   ...hero,

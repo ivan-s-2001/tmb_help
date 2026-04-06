@@ -217,7 +217,11 @@ h1 {
 .hero-page-link:hover,
 .hero-page-link:focus-visible,
 .hero-back-button:hover,
-.hero-back-button:focus-visible {
+.hero-back-button:focus-visible,
+.hero-section-menu-trigger:hover,
+.hero-section-menu-trigger:focus-visible,
+.hero-section-menu-item:hover,
+.hero-section-menu-item:focus-visible {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.16);
   box-shadow:
@@ -229,7 +233,9 @@ h1 {
 .character-card:active,
 .page-card-action:active,
 .hero-page-link:active,
-.hero-back-button:active {
+.hero-back-button:active,
+.hero-section-menu-trigger:active,
+.hero-section-menu-item:active {
   transform: scale(0.99);
 }
 
@@ -432,6 +438,88 @@ h1 {
   gap: 0.8rem;
 }
 
+.hero-section-menu {
+  position: relative;
+  align-self: flex-start;
+}
+
+.hero-section-menu[open] {
+  z-index: 4;
+}
+
+.hero-section-menu summary {
+  list-style: none;
+}
+
+.hero-section-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.hero-section-menu-trigger,
+.hero-section-menu-item {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f6f7fb;
+}
+
+.hero-section-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.7rem 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.hero-section-menu-icon {
+  color: color-mix(in srgb, var(--accent) 76%, white);
+  font-size: 0.82rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.hero-section-menu[open] .hero-section-menu-icon {
+  transform: rotate(180deg);
+}
+
+.hero-section-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 0;
+  width: min(20rem, calc(100vw - 2rem));
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  background: linear-gradient(180deg, rgba(24, 28, 40, 0.98), rgba(14, 17, 27, 0.99));
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 22px 44px rgba(0, 0, 0, 0.34);
+}
+
+.hero-section-menu-item {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
 .page-intro-block h1 {
   max-width: 14ch;
   font-size: clamp(2rem, 7vw, 3.5rem);
@@ -444,6 +532,12 @@ h1 {
 .page-card-grid,
 .page-stack {
   gap: 0.8rem;
+}
+
+.page-section {
+  display: grid;
+  gap: 0.8rem;
+  scroll-margin-top: 1rem;
 }
 
 .page-card-title {
@@ -497,6 +591,10 @@ h1 {
   .character-card-visual,
   .hero-identity-visual {
     height: 7.6rem;
+  }
+
+  .hero-section-menu-panel {
+    width: min(18rem, calc(100vw - 2rem));
   }
 }
 

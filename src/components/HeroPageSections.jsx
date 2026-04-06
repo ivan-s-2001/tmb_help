@@ -84,7 +84,7 @@ export default function HeroPageSections({ page, pages, onOpenPage }) {
   return (
     <div className="page-stack">
       {page.sections.map((section) => (
-        <section key={section.id} className="page-stack">
+        <section key={section.id} id={`section-${page.id}-${section.id}`} className="page-section">
           <div className="page-intro-block">
             <h2 className="page-card-title">{section.title}</h2>
             {section.description ? <p className="page-card-text">{section.description}</p> : null}

@@ -7,7 +7,7 @@ export const gameAssets = {
   characters: [
     {
       id: 'patches',
-      name: 'Патчес',
+      name: 'Patches',
       tagline: 'поддержка и гаджеты',
       description: 'Гибкий герой поддержки с точечным лечением, утилити-эффектами и аккуратным темпом игры.',
       image: patchesImage,
@@ -15,7 +15,7 @@ export const gameAssets = {
     },
     {
       id: 'picket',
-      name: 'Пикет',
+      name: 'Picket',
       tagline: 'танк и контроль фронта',
       description: 'Плотный защитник с щитом, провокацией, крепкой обороной и понятной передней линией.',
       image: picketImage,
@@ -23,7 +23,7 @@ export const gameAssets = {
     },
     {
       id: 'tantrum',
-      name: 'Тантрум',
+      name: 'Tantrum',
       tagline: 'ярость и добивание',
       description: 'Агрессивный ближний бой с быстрым нарастанием угрозы и мощным давлением на врага.',
       image: tantrumImage,
@@ -31,7 +31,7 @@ export const gameAssets = {
     },
     {
       id: 'boomer',
-      name: 'Бумер',
+      name: 'Boomer',
       tagline: 'бомбы и рискованный урон',
       description: 'Взрывной персонаж с высокой угрозой, сильным burst-уроном и яркой атакующей подачей.',
       image: boomerImage,

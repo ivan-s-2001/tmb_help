@@ -1,9 +1,7 @@
-import { heroPages } from '../lib/routes'
-
 export default function HeroSpaceLayout({
   character,
+  pages,
   currentPageId,
-  currentPath,
   onGoHome,
   onOpenPage,
   children,
@@ -19,15 +17,12 @@ export default function HeroSpaceLayout({
             aria-label="Вернуться к выбору героя"
           >
             <span className="hero-back-arrow">←</span>
-            <span>К героям</span>
+            <span>Герои</span>
           </button>
-
-          <span className="hero-route-chip">{currentPath}</span>
         </div>
 
         <section className="hero-identity-card" aria-label={`Пространство героя ${character.name}`}>
           <div className="hero-identity-copy">
-            <span className="section-kicker">Пространство героя</span>
             <strong className="hero-identity-name">{character.name}</strong>
             <p className="hero-identity-role">{character.tagline}</p>
           </div>
@@ -45,7 +40,7 @@ export default function HeroSpaceLayout({
         </section>
 
         <nav className="hero-page-nav" aria-label="Страницы героя">
-          {heroPages.map((page) => (
+          {pages.map((page) => (
             <button
               key={page.id}
               type="button"

@@ -1,27 +1,3 @@
-export const heroPages = [
-  {
-    id: 'menu',
-    slug: '',
-    label: 'Меню',
-    title: 'Меню героя',
-    description: 'Выбери следующий экран внутри пространства героя.',
-  },
-  {
-    id: 'overview',
-    slug: 'overview',
-    label: 'Профиль',
-    title: 'Профиль героя',
-    description: 'Короткий и чистый экран с ролью и общим ощущением героя.',
-  },
-  {
-    id: 'prep',
-    slug: 'prep',
-    label: 'Перед партией',
-    title: 'Перед партией',
-    description: 'Спокойный стартовый экран героя перед началом игры.',
-  },
-]
-
 export function normalizePath(pathname = '/') {
   if (!pathname || pathname === '/') {
     return '/'
@@ -31,14 +7,42 @@ export function normalizePath(pathname = '/') {
   return cleanPath || '/'
 }
 
-export function buildHeroPath(characterId, pageId = 'menu') {
-  const page = heroPages.find((item) => item.id === pageId)
+export function getHeroPages(character) {
+  return character?.pages ?? []
+}
 
-  if (!page) {
-    return `/menu/${characterId}`
+export function getHeroPage(character, pageId) {
+  const pages = getHeroPages(character)
+
+  if (!pages.length) {
+    return null
   }
 
-  return page.slug ? `/menu/${characterId}/${page.slug}` : `/menu/${characterId}`
+  return pages.find((page) => page.id === pageId) ?? pages[0]
+}
+
+export function getHeroPageBySlug(character, slug = '') {
+  const pages = getHeroPages(character)
+
+  if (!pages.length) {
+    return null
+  }
+
+  return pages.find((page) => (page.slug ?? '') === slug) ?? null
+}
+
+export function buildHeroPath(character, pageId) {
+  if (!character) {
+    return '/'
+  }
+
+  const page = pageId ? getHeroPage(character, pageId) : getHeroPages(character)[0]
+
+  if (!page) {
+    return `/menu/${character.id}`
+  }
+
+  return page.slug ? `/menu/${character.id}/${page.slug}` : `/menu/${character.id}`
 }
 
 export function readRoute(pathname, characters) {
@@ -60,17 +64,18 @@ export function readRoute(pathname, characters) {
     return { screen: 'home' }
   }
 
-  if (!parts[2]) {
-    return { screen: 'hero', characterId: character.id, pageId: 'menu' }
-  }
-
-  const page = heroPages.find((item) => item.slug === parts[2])
+  const slug = parts[2] ?? ''
+  const page = getHeroPageBySlug(character, slug) ?? getHeroPages(character)[0]
 
   if (!page) {
     return { screen: 'home' }
   }
 
-  return { screen: 'hero', characterId: character.id, pageId: page.id }
+  return {
+    screen: 'hero',
+    characterId: character.id,
+    pageId: page.id,
+  }
 }
 
 export function navigate(to, { replace = false } = {}) {

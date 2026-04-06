@@ -1,23 +1,12 @@
 export default function HomePage({ characters, onOpenCharacter }) {
   return (
     <main className="home-screen">
-      <section className="intro-block">
-        <span className="eyebrow">Too Many Bones Helper</span>
+      <section className="intro-block home-intro">
         <h1>Выбери героя</h1>
-        <p className="lead">
-          Открой нужного персонажа и сразу переходи в его пространство внутри помощника.
-        </p>
+        <p className="lead">Открой нужного персонажа и переходи в его пространство.</p>
       </section>
 
       <section className="selection-panel" aria-label="Меню выбора персонажа">
-        <div className="selection-panel-head">
-          <div>
-            <span className="section-kicker">Базовые герои</span>
-            <h2>Кого открываем?</h2>
-          </div>
-          <p>Каждая карточка ведёт в отдельное пространство героя.</p>
-        </div>
-
         <div className="character-grid">
           {characters.map((character) => (
             <button

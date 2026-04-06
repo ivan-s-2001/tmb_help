@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import HeroSpaceLayout from './components/HeroSpaceLayout'
 import { gameAssets } from './gameAssets'
-import { buildHeroPath, heroPages, navigate, readRoute } from './lib/routes'
+import { buildHeroPath, getHeroPage, navigate, readRoute } from './lib/routes'
 import HomePage from './pages/HomePage'
 import HeroMenuPage from './pages/hero/HeroMenuPage'
 import HeroOverviewPage from './pages/hero/HeroOverviewPage'
@@ -38,12 +38,12 @@ export default function App() {
   }, [characters, route])
 
   const activePage = useMemo(() => {
-    if (route.screen !== 'hero') {
+    if (!activeCharacter || route.screen !== 'hero') {
       return null
     }
 
-    return heroPages.find((page) => page.id === route.pageId) ?? heroPages[0]
-  }, [route])
+    return getHeroPage(activeCharacter, route.pageId)
+  }, [activeCharacter, route])
 
   useEffect(() => {
     if (!activeCharacter || !activePage) {
@@ -55,7 +55,8 @@ export default function App() {
   }, [activeCharacter, activePage])
 
   const openCharacter = (characterId) => {
-    navigate(buildHeroPath(characterId, 'menu'))
+    const character = characters.find((item) => item.id === characterId)
+    navigate(buildHeroPath(character))
   }
 
   const goHome = () => {
@@ -63,26 +64,29 @@ export default function App() {
   }
 
   const openHeroPage = (characterId, pageId) => {
-    navigate(buildHeroPath(characterId, pageId))
+    const character = characters.find((item) => item.id === characterId)
+    navigate(buildHeroPath(character, pageId))
   }
 
-  const ActiveHeroPage = activePage ? heroPageComponents[activePage.id] : null
+  const ActiveHeroPage = activePage ? heroPageComponents[activePage.component] : null
 
   return (
     <div className="app-shell">
       <div className="app-glow app-glow-left" aria-hidden="true" />
       <div className="app-glow app-glow-right" aria-hidden="true" />
 
-      {activeCharacter && ActiveHeroPage ? (
+      {activeCharacter && activePage && ActiveHeroPage ? (
         <HeroSpaceLayout
           character={activeCharacter}
+          pages={activeCharacter.pages}
           currentPageId={activePage.id}
-          currentPath={window.location.pathname}
           onGoHome={goHome}
           onOpenPage={(pageId) => openHeroPage(activeCharacter.id, pageId)}
         >
           <ActiveHeroPage
             character={activeCharacter}
+            page={activePage}
+            pages={activeCharacter.pages}
             onOpenPage={(pageId) => openHeroPage(activeCharacter.id, pageId)}
           />
         </HeroSpaceLayout>

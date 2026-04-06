@@ -1,3 +1,5 @@
+import HeroSectionMenu from './HeroSectionMenu'
+
 export default function HeroSpaceLayout({
   character,
   pages,
@@ -6,8 +8,16 @@ export default function HeroSpaceLayout({
   onOpenPage,
   children,
 }) {
+  const currentPage = pages.find((page) => page.id === currentPageId) ?? null
+
   return (
     <main className="hero-space-screen" style={{ '--accent': character.accent }}>
+      {currentPage ? (
+        <div className="hero-floating-layer" aria-hidden="false">
+          <HeroSectionMenu key={currentPage.id} page={currentPage} />
+        </div>
+      ) : null}
+
       <header className="hero-space-header">
         <div className="hero-space-toolbar">
           <button

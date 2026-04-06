@@ -24,10 +24,16 @@ export default function HeroSectionMenu({ page }) {
 
   return (
     <details ref={menuRef} className="hero-section-menu">
-      <summary className="hero-section-menu-trigger">
-        <span>Секции</span>
-        <span className="hero-section-menu-icon" aria-hidden="true">
-          ▾
+      <summary
+        className="hero-section-menu-trigger"
+        aria-label={`Открыть секции страницы ${page.title}`}
+      >
+        <span className="sr-only">Открыть секции страницы {page.title}</span>
+
+        <span className="hero-section-menu-burger" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </span>
       </summary>
 

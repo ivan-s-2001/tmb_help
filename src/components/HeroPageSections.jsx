@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 function clampNumber(value, min, max) {
   return Math.min(max, Math.max(min, value))
@@ -427,13 +427,12 @@ export default function HeroPageSections({ page, pages, onOpenPage }) {
 
             <div className="page-block-stack">
               {blocks.map((block, index) => (
-                <Fragment key={block.id ?? `${section.id}-${block.type}-${index}`}>
-                  {index > 0 ? <div className="page-block-divider" aria-hidden="true" /> : null}
-
-                  <div className={`page-block-slot page-block-slot--${block.type}`}>
-                    {renderBlock(block, page, pages, onOpenPage)}
-                  </div>
-                </Fragment>
+                <div
+                  key={block.id ?? `${section.id}-${block.type}-${index}`}
+                  className={`page-block-slot page-block-slot--${block.type}`}
+                >
+                  {renderBlock(block, page, pages, onOpenPage)}
+                </div>
               ))}
             </div>
           </section>

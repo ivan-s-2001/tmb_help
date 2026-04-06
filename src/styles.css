@@ -326,13 +326,7 @@ h1 {
 }
 
 .character-card::after,
-.page-card::after,
-.hero-identity-card::after,
-.page-accent-block::after,
-.page-fact-block::after,
-.page-route-block::after,
-.page-checklist-block::after,
-.page-tracker-block::after {
+.hero-identity-card::after {
   content: '';
   position: absolute;
   inset: auto auto -4rem -2.5rem;
@@ -766,32 +760,43 @@ h1 {
 }
 
 .page-section {
+  position: relative;
   display: grid;
   gap: 1rem;
   scroll-margin-top: 5.5rem;
 }
 
-.page-block-stack {
-  display: grid;
-  gap: 0;
+.page-section + .page-section {
+  margin-top: 1.3rem;
+  padding-top: 1.3rem;
 }
 
-.page-block-divider {
+.page-section + .page-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0.15rem;
+  right: 0.15rem;
   height: 1px;
-  margin: 1rem 0;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.14) 10%,
-    color-mix(in srgb, var(--accent) 34%, rgba(255, 255, 255, 0.16)) 50%,
-    rgba(255, 255, 255, 0.14) 90%,
+    rgba(255, 255, 255, 0.16) 10%,
+    color-mix(in srgb, var(--accent) 30%, rgba(255, 255, 255, 0.18)) 50%,
+    rgba(255, 255, 255, 0.16) 90%,
     transparent 100%
   );
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.24),
-    0 0 14px color-mix(in srgb, var(--accent) 12%, transparent);
-  opacity: 0.98;
+    0 0 12px color-mix(in srgb, var(--accent) 10%, transparent);
+  opacity: 0.96;
+  pointer-events: none;
+}
+
+.page-block-stack {
+  display: grid;
+  gap: 1rem;
 }
 
 .page-block-slot {

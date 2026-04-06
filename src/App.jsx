@@ -1,121 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useMemo, useState } from 'react'
 
-function App() {
-  const [count, setCount] = useState(0)
+const characters = [
+  {
+    id: 'patches',
+    name: 'Patches',
+    role: 'гибкий поддерживающий герой',
+  },
+  {
+    id: 'picket',
+    name: 'Picket',
+    role: 'танк и контроль входящего урона',
+  },
+  {
+    id: 'tantrum',
+    name: 'Tantrum',
+    role: 'агрессия, ярость и добивание',
+  },
+  {
+    id: 'boomer',
+    name: 'Boomer',
+    role: 'бомбы, подготовка и точечный урон',
+  },
+]
+
+export default function App() {
+  const [activeCharacterId, setActiveCharacterId] = useState(characters[0].id)
+
+  const activeCharacter = useMemo(
+    () => characters.find((character) => character.id === activeCharacterId),
+    [activeCharacterId],
+  )
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
+    <div className="app-shell">
+      <div className="app-glow app-glow-left" aria-hidden="true" />
+      <div className="app-glow app-glow-right" aria-hidden="true" />
+
+      <main className="home-screen">
+        <span className="eyebrow">Too Many Bones Helper</span>
+        <h1>Выбери героя</h1>
+        <p className="lead">
+          Первый рабочий этап: только стартовый экран. Чистый новый каркас,
+          мобильный интерфейс и крупные кнопки персонажей без лишней логики.
+        </p>
+
+        <section className="character-list" aria-label="Список персонажей">
+          {characters.map((character) => {
+            const isActive = character.id === activeCharacterId
+
+            return (
+              <button
+                key={character.id}
+                type="button"
+                className={`character-button ${isActive ? 'is-active' : ''}`}
+                onClick={() => setActiveCharacterId(character.id)}
+              >
+                <span className="character-name">{character.name}</span>
+                <span className="character-role">{character.role}</span>
+              </button>
+            )
+          })}
+        </section>
+
+        <section className="status-card" aria-live="polite">
+          <span className="status-label">Сейчас выбран</span>
+          <strong>{activeCharacter?.name}</strong>
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            Следующим безопасным шагом можно будет добавить отдельную страницу
+            героя, не ломая стартовый экран.
           </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        </section>
+      </main>
+    </div>
   )
 }
-
-export default App

@@ -3,15 +3,7 @@ import HeroSpaceLayout from './components/HeroSpaceLayout'
 import { gameAssets } from './gameAssets'
 import { buildHeroPath, getHeroPage, navigate, readRoute } from './lib/routes'
 import HomePage from './pages/HomePage'
-import HeroMenuPage from './pages/hero/HeroMenuPage'
-import HeroOverviewPage from './pages/hero/HeroOverviewPage'
-import HeroPrepPage from './pages/hero/HeroPrepPage'
-
-const heroPageComponents = {
-  menu: HeroMenuPage,
-  overview: HeroOverviewPage,
-  prep: HeroPrepPage,
-}
+import HeroPage from './pages/hero/HeroPage'
 
 export default function App() {
   const { characters } = gameAssets
@@ -68,14 +60,12 @@ export default function App() {
     navigate(buildHeroPath(character, pageId))
   }
 
-  const ActiveHeroPage = activePage ? heroPageComponents[activePage.component] : null
-
   return (
     <div className="app-shell">
       <div className="app-glow app-glow-left" aria-hidden="true" />
       <div className="app-glow app-glow-right" aria-hidden="true" />
 
-      {activeCharacter && activePage && ActiveHeroPage ? (
+      {activeCharacter && activePage ? (
         <HeroSpaceLayout
           character={activeCharacter}
           pages={activeCharacter.pages}
@@ -83,7 +73,7 @@ export default function App() {
           onGoHome={goHome}
           onOpenPage={(pageId) => openHeroPage(activeCharacter.id, pageId)}
         >
-          <ActiveHeroPage
+          <HeroPage
             character={activeCharacter}
             page={activePage}
             pages={activeCharacter.pages}

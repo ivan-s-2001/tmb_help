@@ -15,7 +15,6 @@ function createHeroPages(hero) {
       title: 'Главное',
       description: 'Быстрый вход в пространство героя и переход к нужным страницам.',
       lead: `Страницы ${name} собраны здесь. Открой нужную и переходи дальше без лишнего шума.`,
-      component: 'menu',
       sections: [
         {
           id: 'hero-pages',
@@ -85,7 +84,6 @@ function createHeroPages(hero) {
       title: 'Профиль',
       description: 'Короткий ориентир по роли героя и общему стилю игры за него.',
       lead: 'Короткий ориентир по роли героя и общему стилю игры за него.',
-      component: 'overview',
       sections: [
         {
           id: 'hero-role',
@@ -147,7 +145,6 @@ function createHeroPages(hero) {
       title: 'Перед партией',
       description: 'Спокойная стартовая точка перед началом партии.',
       lead: 'Быстрый вход перед началом партии и спокойная точка старта внутри героя.',
-      component: 'prep',
       sections: [
         {
           id: 'before-start',
@@ -259,7 +256,6 @@ function createHeroPages(hero) {
       title: 'Демо блоков',
       description: 'Живой экран для визуальной проверки всех уже существующих типов блоков.',
       lead: 'Здесь собраны все текущие блоки помощника, чтобы быстро сравнить их в реальном интерфейсе и понять, что считывается лучше всего.',
-      component: 'overview',
       sections: [
         {
           id: 'demo-basic',

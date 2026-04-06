@@ -13,8 +13,7 @@ export default function App() {
           <span className="eyebrow">Too Many Bones Helper</span>
           <h1>Выбери героя</h1>
           <p className="lead">
-            Быстрый вход в помощник для партии. Все базовые герои собраны на одном экране —
-            открой нужного персонажа и продолжай игру без лишнего шума.
+            Открой нужного персонажа и сразу переходи в помощник для партии.
           </p>
         </section>
 
@@ -24,9 +23,7 @@ export default function App() {
               <span className="section-kicker">Базовые герои</span>
               <h2>Кого открываем?</h2>
             </div>
-            <p>
-              Все карточки равноправны: просто выбери персонажа, с которым играешь сейчас.
-            </p>
+            <p>Все карточки равноправны — просто нажми на нужного героя.</p>
           </div>
 
           <div className="character-grid">
@@ -39,10 +36,8 @@ export default function App() {
                 aria-label={`Открыть ${character.name}`}
               >
                 <div className="character-card-copy">
-                  <span className="character-meta">Gearloc</span>
                   <span className="character-name">{character.name}</span>
                   <span className="character-tagline">{character.tagline}</span>
-                  <p className="character-description">{character.description}</p>
                 </div>
 
                 <div className="character-card-visual" aria-hidden="true">
@@ -57,7 +52,8 @@ export default function App() {
                 </div>
 
                 <span className="character-card-action" aria-hidden="true">
-                  Открыть
+                  <span>Открыть</span>
+                  <span className="character-card-arrow">→</span>
                 </span>
               </button>
             ))}

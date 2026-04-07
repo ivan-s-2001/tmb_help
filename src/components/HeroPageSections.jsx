@@ -65,20 +65,19 @@ function getSectionBlocks(section) {
   return buildLegacyBlocks(section)
 }
 
-function AssetFigure({ asset, className, alt = '', style }) {
+function AssetFigure({ asset, className, alt = '' }) {
   if (!asset?.src) {
     return null
   }
 
   return (
-    <div className={className} style={style}>
+    <div className={className}>
       <img
         src={asset.src}
         alt={alt || asset.alt || ''}
         className={`${className}-image`}
         loading="lazy"
         decoding="async"
-        style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain' }}
       />
     </div>
   )
@@ -170,70 +169,51 @@ function FactBlock({ block }) {
   )
 }
 
-function getFaceDetail(block, faceIndex) {
-  if (!Array.isArray(block.faceDetails)) {
-    return null
-  }
-
-  const directDetail = block.faceDetails[faceIndex]
-
-  if (directDetail) {
-    return directDetail
-  }
-
-  return block.faceDetails.find((detail) => detail?.faceIndex === faceIndex) ?? null
-}
-
-function getResolvedFaceEntries(block, die) {
-  const sourceFaces = die?.faces ?? []
-
-  if (!sourceFaces.length) {
+function buildFaceEntries(block, die) {
+  if (!die?.faces?.length) {
     return []
   }
 
-  const explicitIndices =
-    Array.isArray(block.faceIndices) && block.faceIndices.length
-      ? block.faceIndices
-      : sourceFaces.map((_, index) => index)
+  const requestedFaceIndices = Array.isArray(block.faceIndices) && block.faceIndices.length
+    ? block.faceIndices
+    : die.faces.map((_, index) => index)
 
-  return explicitIndices
-    .map((rawIndex) => Number(rawIndex))
-    .filter((index) => Number.isInteger(index) && index >= 0 && index < sourceFaces.length)
-    .map((index) => {
-      const face = sourceFaces[index]
-      const detail = getFaceDetail(block, index)
+  return requestedFaceIndices
+    .map((faceIndex) => ({
+      faceIndex,
+      face: die.faces[faceIndex],
+    }))
+    .filter(({ face }) => Boolean(face))
+}
 
-      return {
-        index,
-        asset: face.visualAsset,
-        fallbackName: face.name,
-        fallbackMeaning: face.meaning,
-        title: detail?.title ?? face.name ?? `Грань ${index + 1}`,
-        description: detail?.description ?? detail?.text ?? face.meaning ?? '',
-        note: detail?.note ?? '',
-      }
-    })
+function getFaceDetail(block, faceIndex, fallbackFace) {
+  const faceDetails = Array.isArray(block.faceDetails) ? block.faceDetails : []
+  const indexedDetail = faceDetails.find((detail) => detail?.index === faceIndex)
+  const arrayDetail = indexedDetail ?? faceDetails[faceIndex] ?? null
+
+  return {
+    title: arrayDetail?.title ?? fallbackFace?.name ?? `Грань ${faceIndex + 1}`,
+    description: arrayDetail?.description ?? fallbackFace?.meaning ?? '',
+    note: arrayDetail?.note ?? '',
+  }
 }
 
 function DieBlock({ block }) {
   const die = block.die
-  const faceEntries = getResolvedFaceEntries(block, die)
 
-  if (!die || !faceEntries.length) {
+  if (!die) {
     return null
   }
 
-  const fallbackFeaturedIndex = faceEntries[0]?.index ?? 0
-  const featuredFaceIndex = Number.isInteger(block.featuredFaceIndex)
-    ? block.featuredFaceIndex
-    : fallbackFeaturedIndex
+  const faceEntries = buildFaceEntries(block, die)
+  const requestedFeaturedIndex = Number.isInteger(block.featuredFaceIndex) ? block.featuredFaceIndex : null
+  const featuredEntry = requestedFeaturedIndex !== null
+    ? faceEntries.find((entry) => entry.faceIndex === requestedFeaturedIndex) ?? faceEntries[0]
+    : faceEntries[0]
 
-  const featuredEntry =
-    faceEntries.find((entry) => entry.index === featuredFaceIndex)
-    ?? faceEntries[0]
-
-  const showFeaturedFace = block.showFeaturedFace !== false
-  const showAllFaces = block.showAllFaces !== false
+  const featuredDetail = featuredEntry
+    ? getFaceDetail(block, featuredEntry.faceIndex, featuredEntry.face)
+    : null
 
   return (
     <article className="page-die-block">
@@ -247,117 +227,40 @@ function DieBlock({ block }) {
         <span className="page-block-meta page-block-meta--value">{die.code}</span>
       </div>
 
-      {showFeaturedFace && featuredEntry ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 5.75rem) minmax(0, 1fr)',
-            gap: '0.85rem',
-            alignItems: 'center',
-            padding: '0.82rem',
-            borderRadius: '1rem',
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
-          <AssetFigure
-            asset={featuredEntry.asset}
-            className="page-die-featured-asset"
-            alt={`${block.title ?? die.name} — ${featuredEntry.title}`}
-            style={{
-              width: '5.75rem',
-              borderRadius: '1rem',
-              overflow: 'hidden',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}
-          />
+      {featuredEntry ? (
+        <div className="page-die-main">
+          <AssetFigure asset={featuredEntry.face.visualAsset} className="page-die-asset" alt={featuredDetail?.title ?? die.name} />
 
-          <div style={{ display: 'grid', gap: '0.22rem', minWidth: 0 }}>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: '#cdd7f5',
-              }}
-            >
-              {block.featuredFaceLabel ?? `Главная грань · ${featuredEntry.index + 1}`}
-            </span>
-            <strong style={{ fontSize: '1.1rem', lineHeight: 1.05 }}>{block.title ?? die.name}</strong>
-            <strong style={{ fontSize: '0.98rem', lineHeight: 1.18 }}>{featuredEntry.title}</strong>
-            {featuredEntry.description ? (
-              <p className="page-card-text">{featuredEntry.description}</p>
+          <div className="page-die-summary">
+            <span className="page-accent-eyebrow">Главная грань</span>
+            <strong className="page-route-label">{die.name}</strong>
+            <strong className="page-die-face-name">{featuredDetail?.title}</strong>
+            {featuredDetail?.description ? (
+              <p className="page-card-text">{featuredDetail.description}</p>
             ) : null}
-            {featuredEntry.note ? (
-              <p
-                style={{
-                  color: '#dbe4fb',
-                  fontSize: '0.84rem',
-                  lineHeight: 1.28,
-                }}
-              >
-                {featuredEntry.note}
-              </p>
+            {featuredDetail?.note ? (
+              <span className="page-die-face-meaning">{featuredDetail.note}</span>
             ) : null}
-            {block.caption ? (
-              <p
-                style={{
-                  color: '#9fb0d9',
-                  fontSize: '0.82rem',
-                  lineHeight: 1.28,
-                }}
-              >
-                {block.caption}
-              </p>
-            ) : null}
+            {block.caption ? <p className="page-card-text">{block.caption}</p> : null}
           </div>
         </div>
       ) : null}
 
-      {showAllFaces ? (
+      {faceEntries.length ? (
         <div className="page-die-faces-grid">
-          {faceEntries.map((entry) => {
-            const isFeatured = featuredEntry?.index === entry.index
+          {faceEntries.map(({ face, faceIndex }) => {
+            const faceDetail = getFaceDetail(block, faceIndex, face)
 
             return (
-              <article
-                key={`${die.id}-${entry.index}`}
-                className={`page-die-face ${isFeatured ? 'is-featured' : ''}`}
-                style={isFeatured ? { borderColor: 'color-mix(in srgb, var(--accent) 30%, rgba(255,255,255,0.12))' } : undefined}
-              >
-                <AssetFigure
-                  asset={entry.asset}
-                  className="page-die-face-asset"
-                  alt={`${block.title ?? die.name} — ${entry.title}`}
-                />
-
+              <article key={face.id} className="page-die-face">
+                <AssetFigure asset={face.visualAsset} className="page-die-face-asset" alt={faceDetail.title} />
                 <div className="page-die-face-copy">
-                  <span
-                    style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      textTransform: 'uppercase',
-                      color: '#c5d0ef',
-                    }}
-                  >
-                    Грань {entry.index + 1}
-                  </span>
-                  <strong className="page-die-face-name">{entry.title}</strong>
-                  {entry.description ? (
-                    <span className="page-die-face-meaning">{entry.description}</span>
+                  <strong className="page-die-face-name">{faceDetail.title}</strong>
+                  {faceDetail.description ? (
+                    <span className="page-die-face-meaning">{faceDetail.description}</span>
                   ) : null}
-                  {entry.note ? (
-                    <span
-                      style={{
-                        color: '#dbe4fb',
-                        fontSize: '0.78rem',
-                        lineHeight: 1.25,
-                      }}
-                    >
-                      {entry.note}
-                    </span>
+                  {faceDetail.note ? (
+                    <span className="page-card-text">{faceDetail.note}</span>
                   ) : null}
                 </div>
               </article>

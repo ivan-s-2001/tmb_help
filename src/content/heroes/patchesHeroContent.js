@@ -1,25 +1,23 @@
 import { patchesContent } from './patches'
 import { createPatchesDicePage } from './patchesDicePage'
 
-function injectDicePage(hero) {
+function buildPatchesPages() {
+  const pagesWithoutDice = patchesContent.pages.filter((page) => page.id !== 'dice')
   const dicePage = createPatchesDicePage()
-  const pagesWithoutDice = hero.pages.filter((page) => page.id !== 'dice')
   const battleIndex = pagesWithoutDice.findIndex((page) => page.id === 'battle')
 
   if (battleIndex === -1) {
-    return {
-      ...hero,
-      pages: [...pagesWithoutDice, dicePage],
-    }
+    return [...pagesWithoutDice, dicePage]
   }
 
-  const pages = [...pagesWithoutDice]
-  pages.splice(battleIndex, 0, dicePage)
-
-  return {
-    ...hero,
-    pages,
-  }
+  return [
+    ...pagesWithoutDice.slice(0, battleIndex),
+    dicePage,
+    ...pagesWithoutDice.slice(battleIndex),
+  ]
 }
 
-export const patchesHeroContent = injectDicePage(patchesContent)
+export const patchesHeroContent = {
+  ...patchesContent,
+  pages: buildPatchesPages(),
+}

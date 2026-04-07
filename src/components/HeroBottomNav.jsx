@@ -41,6 +41,17 @@ function BlocksIcon() {
   )
 }
 
+function DiceIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4.5" y="4.5" width="15" height="15" rx="3" />
+      <circle cx="9" cy="9" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="15" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
 function DefaultIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -57,7 +68,11 @@ function getPageIcon(pageId) {
       return <OverviewIcon />
     case 'prep':
       return <PrepIcon />
-    case 'blocks':
+    case 'branches':
+      return <BlocksIcon />
+    case 'dice':
+      return <DiceIcon />
+    case 'battle':
       return <BlocksIcon />
     default:
       return <DefaultIcon />

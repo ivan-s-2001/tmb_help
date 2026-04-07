@@ -112,32 +112,17 @@ function createUniqueSlug(baseSlug, usedSlugs, fallbackPrefix) {
   return candidate
 }
 
-function parseDiceNameByConvention(baseName, heroId) {
-  const match = baseName.match(/^([A-Za-z]+)(\d+)_(\d+)$/)
+function parseConventionDiceName(baseName) {
+  const match = baseName.match(/^([A-Za-zА-Яа-яЁё]+)(\d+)_(\d+)$/)
 
   if (!match) {
     return null
   }
 
-  const [, heroPrefix, dieNumberRaw, faceNumberRaw] = match
-  const parsedHeroId = slugify(heroPrefix)
-
-  if (parsedHeroId !== heroId) {
-    return null
-  }
-
-  const dieNumber = Number(dieNumberRaw)
-  const faceNumber = Number(faceNumberRaw)
-
-  if (!Number.isInteger(dieNumber) || !Number.isInteger(faceNumber)) {
-    return null
-  }
-
   return {
-    dieNumber,
-    faceNumber,
-    dieKey: `die-${String(dieNumber).padStart(2, '0')}`,
-    faceKey: `face-${String(faceNumber).padStart(2, '0')}`,
+    rawHeroName: match[1],
+    dieNumber: Number(match[2]),
+    faceNumber: Number(match[3]),
   }
 }
 
@@ -146,7 +131,7 @@ function parseDiceAssetFile(filePath, src) {
   const pathParts = normalizedPath.split('/')
   const dicesIndex = pathParts.indexOf('dices')
 
-  if (dicesIndex === -1 || pathParts.length < dicesIndex + 4) {
+  if (dicesIndex === -1 || pathParts.length < dicesIndex + 3) {
     return null
   }
 
@@ -161,26 +146,34 @@ function parseDiceAssetFile(filePath, src) {
   const fileName = remainder.at(-1)
   const baseName = stripExtension(fileName)
   const directoryParts = remainder.slice(0, -1)
-  const byConvention = directoryParts.length ? null : parseDiceNameByConvention(baseName, heroId)
+  const conventionMatch = parseConventionDiceName(baseName)
+
+  if (conventionMatch) {
+    return {
+      filePath,
+      src,
+      heroId,
+      heroFolder,
+      dieKey: `die-${String(conventionMatch.dieNumber).padStart(2, '0')}`,
+      faceKey: `face-${String(conventionMatch.faceNumber).padStart(2, '0')}`,
+      dieIndex: conventionMatch.dieNumber,
+      faceIndex: conventionMatch.faceNumber,
+      sortKey: `${String(conventionMatch.dieNumber).padStart(2, '0')}_${String(conventionMatch.faceNumber).padStart(2, '0')}`,
+      baseName,
+    }
+  }
 
   return {
     filePath,
     src,
     heroId,
     heroFolder,
-    dieKey: byConvention
-      ? byConvention.dieKey
-      : directoryParts.length
-        ? directoryParts.join(' ')
-        : inferDieKey(baseName),
-    faceKey: byConvention
-      ? byConvention.faceKey
-      : directoryParts.length
-        ? baseName
-        : inferFaceKey(baseName),
-    dieNumber: byConvention?.dieNumber ?? null,
-    faceNumber: byConvention?.faceNumber ?? inferTrailingNumber(baseName),
+    dieKey: directoryParts.length ? directoryParts.join(' ') : inferDieKey(baseName),
+    faceKey: directoryParts.length ? baseName : inferFaceKey(baseName),
+    dieIndex: null,
+    faceIndex: inferTrailingNumber(baseName),
     sortKey: remainder.join('/'),
+    baseName,
   }
 }
 
@@ -216,13 +209,11 @@ function buildDiceAssetCatalog(assetModules) {
     .sort(([leftHeroId], [rightHeroId]) => naturalCompare(leftHeroId, rightHeroId))
     .forEach(([heroId, heroFiles]) => {
       const filesByDie = heroFiles.reduce((accumulator, file) => {
-        const dieGroupKey = file.dieNumber ?? file.dieKey
-
-        if (!accumulator[dieGroupKey]) {
-          accumulator[dieGroupKey] = []
+        if (!accumulator[file.dieKey]) {
+          accumulator[file.dieKey] = []
         }
 
-        accumulator[dieGroupKey].push(file)
+        accumulator[file.dieKey].push(file)
         return accumulator
       }, {})
 
@@ -230,34 +221,35 @@ function buildDiceAssetCatalog(assetModules) {
       let dieOrder = 0
 
       Object.entries(filesByDie)
-        .sort(([leftDieKey, leftFiles], [rightDieKey, rightFiles]) => {
-          const leftNumber = leftFiles[0]?.dieNumber
-          const rightNumber = rightFiles[0]?.dieNumber
+        .sort(([, leftDieFiles], [, rightDieFiles]) => {
+          const leftDieIndex = leftDieFiles[0]?.dieIndex ?? Number.MAX_SAFE_INTEGER
+          const rightDieIndex = rightDieFiles[0]?.dieIndex ?? Number.MAX_SAFE_INTEGER
 
-          if (Number.isInteger(leftNumber) && Number.isInteger(rightNumber) && leftNumber !== rightNumber) {
-            return leftNumber - rightNumber
+          if (leftDieIndex !== rightDieIndex) {
+            return leftDieIndex - rightDieIndex
           }
 
-          return naturalCompare(leftDieKey, rightDieKey)
+          return naturalCompare(leftDieFiles[0]?.dieKey, rightDieFiles[0]?.dieKey)
         })
-        .forEach(([, dieFiles]) => {
+        .forEach(([dieKey, dieFiles]) => {
           dieOrder += 1
 
-          const firstDieFile = dieFiles[0]
-          const dieNumber = Number.isInteger(firstDieFile?.dieNumber) ? firstDieFile.dieNumber : dieOrder
+          const dieNumber = dieFiles[0]?.dieIndex ?? dieOrder
           const dieSlug = createUniqueSlug(
-            `die-${String(dieNumber).padStart(2, '0')}`,
+            slugify(dieKey) || `die-${String(dieNumber).padStart(2, '0')}`,
             usedDieSlugs,
             `die-${String(dieNumber).padStart(2, '0')}`,
           )
 
           const dieId = `die.${heroId}.${dieSlug}`
           const dieAssetId = `asset.die.${heroId}.${dieSlug}`
-          const dieName = `Кубик ${dieNumber}`
+          const dieName = dieFiles[0]?.dieIndex
+            ? `Кубик ${dieFiles[0].dieIndex}`
+            : humanize(dieKey) || `Die ${String(dieOrder).padStart(2, '0')}`
 
           const sortedFaces = [...dieFiles].sort((leftFace, rightFace) => {
-            const leftIndex = leftFace.faceNumber ?? Number.MAX_SAFE_INTEGER
-            const rightIndex = rightFace.faceNumber ?? Number.MAX_SAFE_INTEGER
+            const leftIndex = leftFace.faceIndex ?? Number.MAX_SAFE_INTEGER
+            const rightIndex = rightFace.faceIndex ?? Number.MAX_SAFE_INTEGER
 
             if (leftIndex !== rightIndex) {
               return leftIndex - rightIndex
@@ -270,16 +262,19 @@ function buildDiceAssetCatalog(assetModules) {
           const faceIds = []
 
           sortedFaces.forEach((faceFile, faceOrder) => {
-            const faceNumber = Number.isInteger(faceFile.faceNumber) ? faceFile.faceNumber : faceOrder + 1
+            const faceNumber = faceFile.faceIndex ?? faceOrder + 1
+            const fallbackFaceKey = `face-${String(faceNumber).padStart(2, '0')}`
             const faceSlug = createUniqueSlug(
-              `face-${String(faceNumber).padStart(2, '0')}`,
+              slugify(faceFile.faceKey) || fallbackFaceKey,
               usedFaceSlugs,
-              `face-${String(faceNumber).padStart(2, '0')}`,
+              fallbackFaceKey,
             )
 
             const faceId = `dieFace.${heroId}.${dieSlug}.${faceSlug}`
             const faceAssetId = `asset.dieFace.${heroId}.${dieSlug}.${faceSlug}`
-            const faceName = `Грань ${faceNumber}`
+            const faceName = faceFile.faceIndex
+              ? `Грань ${faceFile.faceIndex}`
+              : humanize(faceFile.faceKey) || `Face ${faceOrder + 1}`
 
             faceIds.push(faceId)
 
@@ -289,9 +284,8 @@ function buildDiceAssetCatalog(assetModules) {
               dieId,
               name: faceName,
               shortName: faceName,
-              shortLabel: String(faceNumber),
-              meaning: '',
-              faceNumber,
+              shortLabel: `F${faceNumber}`,
+              meaning: faceName,
               sortOrder: faceOrder,
               visualAssetId: faceAssetId,
             })
@@ -313,7 +307,7 @@ function buildDiceAssetCatalog(assetModules) {
               kind: 'image',
               group: 'dice',
               src: previewFace.src,
-              alt: `${dieName} preview`,
+              alt: `${dieName} die`,
             }
           }
 
@@ -323,7 +317,6 @@ function buildDiceAssetCatalog(assetModules) {
             name: dieName,
             shortName: `D${String(dieNumber).padStart(2, '0')}`,
             code: `D${String(dieNumber).padStart(2, '0')}`,
-            dieNumber,
             visualAssetId: dieAssetId,
             faceIds,
             sortOrder: dieNumber - 1,

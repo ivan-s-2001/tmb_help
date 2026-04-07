@@ -1,1 +1,1 @@
-export { default } from './HeroPage'
+export { default } from './HeroPageRenderer'

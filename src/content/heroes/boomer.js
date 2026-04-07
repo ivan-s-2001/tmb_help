@@ -1,6 +1,6 @@
 import { createDefaultHeroPages } from './createDefaultHeroPages'
 
-const boomerHeroBase = {
+const heroBase = {
   id: 'boomer',
   name: 'Boomer',
   tagline: 'бомбы и рискованный урон',
@@ -11,6 +11,6 @@ const boomerHeroBase = {
 }
 
 export const boomerContent = {
-  ...boomerHeroBase,
-  pages: createDefaultHeroPages(boomerHeroBase),
+  ...heroBase,
+  pages: createDefaultHeroPages(heroBase),
 }

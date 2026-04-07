@@ -1,6 +1,6 @@
 import { createDefaultHeroPages } from './createDefaultHeroPages'
 
-const tantrumHeroBase = {
+const heroBase = {
   id: 'tantrum',
   name: 'Tantrum',
   tagline: 'ярость и добивание',
@@ -11,6 +11,6 @@ const tantrumHeroBase = {
 }
 
 export const tantrumContent = {
-  ...tantrumHeroBase,
-  pages: createDefaultHeroPages(tantrumHeroBase),
+  ...heroBase,
+  pages: createDefaultHeroPages(heroBase),
 }

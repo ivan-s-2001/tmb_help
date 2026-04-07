@@ -1,6 +1,6 @@
 import { createDefaultHeroPages } from './createDefaultHeroPages'
 
-const picketHeroBase = {
+const heroBase = {
   id: 'picket',
   name: 'Picket',
   tagline: 'танк и контроль фронта',
@@ -11,6 +11,6 @@ const picketHeroBase = {
 }
 
 export const picketContent = {
-  ...picketHeroBase,
-  pages: createDefaultHeroPages(picketHeroBase),
+  ...heroBase,
+  pages: createDefaultHeroPages(heroBase),
 }
